@@ -1,6 +1,14 @@
 import { useState, useEffect } from 'react';
 
-const API_BASE = import.meta.env.VITE_BACKEND_URL || '';
+const getBackendUrl = () => {
+  let url = import.meta.env.VITE_BACKEND_URL;
+  if (!url || (import.meta.env.PROD && (url.includes('localhost') || url.includes('127.0.0.1')))) {
+    url = 'https://projectforge-ai-1.onrender.com';
+  }
+  return url.replace(/\/+$/, '');
+};
+
+const API_BASE = getBackendUrl();
 
 export function useSSE(projectId) {
   const [agentProgress, setAgentProgress] = useState({
@@ -20,11 +28,10 @@ export function useSSE(projectId) {
     if (!projectId) return;
 
     const token = localStorage.getItem('access_token');
-    // Use relative path so the Vite proxy forwards to the backend,
-    // avoiding CORS issues (EventSource cannot send custom headers).
-    const sseUrl = token
+    const path = token
       ? `/api/projects/${projectId}/progress?token=${encodeURIComponent(token)}`
       : `/api/projects/${projectId}/progress`;
+    const sseUrl = `${API_BASE}${path}`;
 
     const eventSource = new EventSource(sseUrl);
 

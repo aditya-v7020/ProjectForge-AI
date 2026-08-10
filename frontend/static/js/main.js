@@ -3,7 +3,15 @@
    API client, JWT token storage, & common helpers
    ============================================ */
 
-const API_BASE = window.BACKEND_URL || 'http://localhost:8000';
+const getBackendUrl = () => {
+    let url = window.BACKEND_URL;
+    if (!url || (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1' && (url.includes('localhost') || url.includes('127.0.0.1')))) {
+        url = 'https://projectforge-ai-1.onrender.com';
+    }
+    return url.replace(/\/+$/, '');
+};
+
+const API_BASE = getBackendUrl();
 
 // --- Auth Token Management ---
 function getToken() {

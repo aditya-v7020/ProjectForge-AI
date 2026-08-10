@@ -53,6 +53,9 @@ app = FastAPI(
 
 # CORS middleware — allow local and deployed frontend origins
 allowed_origins = [
+    "https://project-forge-ai-ten.vercel.app",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
     "http://localhost:8001",
     "http://127.0.0.1:8001",
     "http://localhost:3000",
@@ -61,15 +64,18 @@ allowed_origins = [
     "http://127.0.0.1:5173",
 ]
 import os
-if os.getenv("FRONTEND_URL"):
-    allowed_origins.append(os.getenv("FRONTEND_URL"))
-if os.getenv("VITE_BACKEND_URL"):
-    allowed_origins.append(os.getenv("VITE_BACKEND_URL"))
+for env_var in ["FRONTEND_URL", "CORS_ORIGINS", "VITE_BACKEND_URL"]:
+    val = os.getenv(env_var)
+    if val:
+        for origin in val.split(","):
+            cleaned = origin.strip().rstrip("/")
+            if cleaned and cleaned not in allowed_origins:
+                allowed_origins.append(cleaned)
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
-    allow_origin_regex=r"https://.*\.onrender\.com",
+    allow_origin_regex=r"https://.*\.vercel\.app|https://.*\.onrender\.com",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -1,6 +1,14 @@
 import axios from 'axios';
 
-const API_BASE = import.meta.env.VITE_BACKEND_URL || '';
+const getBackendUrl = () => {
+  let url = import.meta.env.VITE_BACKEND_URL;
+  if (!url || (import.meta.env.PROD && (url.includes('localhost') || url.includes('127.0.0.1')))) {
+    url = 'https://projectforge-ai-1.onrender.com';
+  }
+  return url.replace(/\/+$/, '');
+};
+
+const API_BASE = getBackendUrl();
 
 const api = axios.create({
   baseURL: API_BASE,
