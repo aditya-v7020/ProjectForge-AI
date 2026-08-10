@@ -51,17 +51,25 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# CORS middleware — allow React/Vite frontend
+# CORS middleware — allow local and deployed frontend origins
+allowed_origins = [
+    "http://localhost:8001",
+    "http://127.0.0.1:8001",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+import os
+if os.getenv("FRONTEND_URL"):
+    allowed_origins.append(os.getenv("FRONTEND_URL"))
+if os.getenv("VITE_BACKEND_URL"):
+    allowed_origins.append(os.getenv("VITE_BACKEND_URL"))
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:8001",
-        "http://127.0.0.1:8001",
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-    ],
+    allow_origins=allowed_origins,
+    allow_origin_regex=r"https://.*\.onrender\.com",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
