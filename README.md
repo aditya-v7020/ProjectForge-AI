@@ -137,7 +137,7 @@ Then log in on the React frontend (`http://localhost:3000/login`) with:
 
 # Terminal 1:
 
-cd "D:\ITR\RoughWork\ProjectForge AI"
+cd "D:\ITR\ITR ASSIGNMENTS COPY BRANCH\ProjectForge AI"
 .\backend\venv\Scripts\Activate.ps1
 python -m uvicorn backend.app.main:app --reload --port 8000
 
@@ -146,6 +146,9 @@ python -m uvicorn backend.app.main:app --reload --port 8000
 
 # Terminal 2:
 
-cd "D:\ITR\RoughWork\ProjectForge AI\frontend"
+cd "D:\ITR\ITR ASSIGNMENTS COPY BRANCH\ProjectForge AI\frontend"
 npm install
 npm run dev
+
+# Website Link
+https://project-forge-ai-ten.vercel.app?utm_source=chatgpt.com
