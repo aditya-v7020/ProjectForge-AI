@@ -77,7 +77,7 @@ OPENROUTER_API_KEY=
 TAVILY_API_KEY=
 
 # DATABASE (Update YOUR_PASSWORD with your local PostgreSQL password)
-DATABASE_URL=postgresql://postgres:YOUR_PASSWORD@localhost:5432/projectforge
+DATABASE_URL=
 
 # APPLICATION
 SECRET_KEY=change-me-to-a-random-secret
