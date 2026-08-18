@@ -152,3 +152,8 @@ npm run dev
 
 # Website Link
 https://project-forge-ai-ten.vercel.app?utm_source=chatgpt.com
+
+#For Login
+
+USERNAME- Aditya
+PASSWORD- 123456
