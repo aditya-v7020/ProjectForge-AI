@@ -7,30 +7,53 @@ from backend.app.core.security import hash_password, verify_password, create_acc
 from backend.app.models.user import User
 from backend.app.schemas.user import UserRegister, UserLogin, UserResponse, TokenResponse
 
+from sqlalchemy import func
+
 router = APIRouter(prefix="/api/auth", tags=["Authentication"])
 
 
 @router.post("/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
 def register(data: UserRegister, db: Session = Depends(get_db)):
     """Register a new user."""
-    # Check if username exists
-    if db.query(User).filter(User.username == data.username).first():
+    clean_username = data.username.strip()
+    clean_email = data.email.strip().lower()
+
+    if len(clean_username) < 3:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Username already taken.",
+            detail="Username must be at least 3 characters.",
         )
 
-    # Check if email exists
-    if db.query(User).filter(User.email == data.email).first():
+    if len(clean_email) < 5 or "@" not in clean_email or "." not in clean_email:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email already registered.",
+            detail="Please provide a valid email address.",
+        )
+
+    if len(data.password) < 6:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Password must be at least 6 characters.",
+        )
+
+    # Check if username exists (case-insensitive)
+    if db.query(User).filter(func.lower(User.username) == clean_username.lower()).first():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Username is already taken. Please choose another username.",
+        )
+
+    # Check if email exists (case-insensitive)
+    if db.query(User).filter(func.lower(User.email) == clean_email).first():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="An account with this email already exists.",
         )
 
     # Create user
     user = User(
-        username=data.username,
-        email=data.email,
+        username=clean_username,
+        email=clean_email,
         password_hash=hash_password(data.password),
     )
     db.add(user)
@@ -48,13 +71,22 @@ def register(data: UserRegister, db: Session = Depends(get_db)):
 
 @router.post("/login", response_model=TokenResponse)
 def login(data: UserLogin, db: Session = Depends(get_db)):
-    """Login and get JWT token."""
-    user = db.query(User).filter(User.username == data.username).first()
+    """Login with username or email and get JWT token."""
+    clean_identifier = data.username.strip().lower()
+
+    user = (
+        db.query(User)
+        .filter(
+            (func.lower(User.username) == clean_identifier)
+            | (func.lower(User.email) == clean_identifier)
+        )
+        .first()
+    )
 
     if not user or not verify_password(data.password, user.password_hash):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid username or password.",
+            detail="Invalid username/email or password.",
         )
 
     token = create_access_token({"sub": str(user.id)})

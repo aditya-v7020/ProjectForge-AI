@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Sparkles, ArrowRight, Bot, Clock, Users, Zap, CheckCircle2, AlertCircle } from 'lucide-react';
 import api from '../services/api';
+import { getErrorMessage } from '../utils/errors';
 import AgentProgressModal from '../components/AgentProgressModal';
 import { useSSE } from '../hooks/useSSE';
 
@@ -62,7 +63,7 @@ export default function CreateProjectPage() {
         project_idea: projectIdea,
       });
     } catch (err) {
-      setError(err.response?.data?.detail || err.message || 'Failed to start AI analysis wizard.');
+      setError(getErrorMessage(err, 'Failed to start AI analysis wizard.'));
       setLoading(false);
       setShowSSE(false);
     }

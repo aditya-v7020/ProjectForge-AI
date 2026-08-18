@@ -27,6 +27,7 @@ import {
   ChevronUp,
 } from 'lucide-react';
 import api from '../services/api';
+import { getErrorMessage } from '../utils/errors';
 import AgentProgressModal from '../components/AgentProgressModal';
 import TechComparisonModal from '../components/TechComparisonModal';
 import TavilySourcesCard from '../components/TavilySourcesCard';
@@ -96,7 +97,7 @@ export default function TechnologySelectionPage() {
       await api.post(`/api/projects/${id}/regenerate/technology`);
       await loadOptions();
     } catch (err) {
-      setError(err.response?.data?.detail || 'Failed to regenerate technology options.');
+      setError(getErrorMessage(err, 'Failed to regenerate technology options.'));
     } finally {
       setRegenerating(false);
     }
@@ -154,7 +155,7 @@ export default function TechnologySelectionPage() {
       setSelectedTechs(initialSelected);
       setIsLocked(alreadyLocked);
     } catch (err) {
-      setError(err.response?.data?.detail || err.message || 'Failed to load technology options.');
+      setError(getErrorMessage(err, 'Failed to load technology options.'));
     } finally {
       setLoading(false);
     }
@@ -228,11 +229,7 @@ export default function TechnologySelectionPage() {
 
       await api.post(`/api/projects/${id}/generate-plan`);
     } catch (err) {
-      const msg =
-        typeof err.response?.data?.detail === 'string'
-          ? err.response.data.detail
-          : err.message || 'Failed to lock technologies and generate architecture.';
-      setError(msg);
+      setError(getErrorMessage(err, 'Failed to lock technologies and generate architecture.'));
       setSubmitting(false);
       setShowSSE(false);
     }

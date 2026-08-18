@@ -35,6 +35,7 @@ import {
   Eye,
 } from 'lucide-react';
 import api from '../services/api';
+import { getErrorMessage } from '../utils/errors';
 
 const STATUS_CONFIG = {
   todo: { id: 'todo', label: 'To Do', color: '#38BDF8', bg: 'rgba(56, 189, 248, 0.12)', border: 'rgba(56, 189, 248, 0.3)', icon: PlayCircle },
@@ -129,7 +130,7 @@ export default function TaskBoardPage() {
         setSelectedTaskId(initialized[0].id);
       }
     } catch (err) {
-      setError(err.response?.data?.detail || err.message || 'Tasks not generated yet.');
+      setError(getErrorMessage(err, 'Tasks not generated yet.'));
     } finally {
       setLoading(false);
     }

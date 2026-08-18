@@ -142,3 +142,55 @@ def test_legacy_hash_compatibility(client, db_session):
     assert login_res.status_code == 200
     assert "access_token" in login_res.json()
 
+
+def test_login_with_email_and_case_insensitivity(client):
+    """Test registering and logging in with email or username regardless of casing."""
+    reg = client.post("/api/auth/register", json={
+        "username": "JohnDoe",
+        "email": "John.Doe@Example.com",
+        "password": "mypassword123",
+    })
+    assert reg.status_code == 201
+
+    # Login with exact username
+    l1 = client.post("/api/auth/login", json={"username": "JohnDoe", "password": "mypassword123"})
+    assert l1.status_code == 200
+
+    # Login with lowercased username
+    l2 = client.post("/api/auth/login", json={"username": "johndoe", "password": "mypassword123"})
+    assert l2.status_code == 200
+
+    # Login with email
+    l3 = client.post("/api/auth/login", json={"username": "john.doe@example.com", "password": "mypassword123"})
+    assert l3.status_code == 200
+
+    # Login with uppercase email
+    l4 = client.post("/api/auth/login", json={"username": "JOHN.DOE@EXAMPLE.COM", "password": "mypassword123"})
+    assert l4.status_code == 200
+
+
+def test_duplicate_registration_validation(client):
+    """Test duplicate registration returns 400 with clear message."""
+    client.post("/api/auth/register", json={
+        "username": "uniqueuser",
+        "email": "unique@example.com",
+        "password": "password123",
+    })
+
+    # Duplicate username
+    dup_user = client.post("/api/auth/register", json={
+        "username": "UNIQUEUSER",
+        "email": "different@example.com",
+        "password": "password123",
+    })
+    assert dup_user.status_code == 400
+
+    # Duplicate email
+    dup_email = client.post("/api/auth/register", json={
+        "username": "differentuser",
+        "email": "UNIQUE@example.com",
+        "password": "password123",
+    })
+    assert dup_email.status_code == 400
+
+

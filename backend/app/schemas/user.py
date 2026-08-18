@@ -6,15 +6,15 @@ from typing import Optional
 
 class UserRegister(BaseModel):
     """Registration request."""
-    username: str = Field(..., min_length=3, max_length=150)
-    email: str = Field(..., min_length=5, max_length=255)
-    password: str = Field(..., min_length=6, max_length=128)
+    username: str = Field(..., min_length=3, max_length=150, description="Username (minimum 3 characters)")
+    email: str = Field(..., min_length=5, max_length=255, description="Valid email address")
+    password: str = Field(..., min_length=6, max_length=128, description="Password (minimum 6 characters)")
 
 
 class UserLogin(BaseModel):
     """Login request."""
-    username: str
-    password: str
+    username: str = Field(..., min_length=1, description="Username or Email")
+    password: str = Field(..., min_length=1, description="Password")
 
 
 class UserResponse(BaseModel):

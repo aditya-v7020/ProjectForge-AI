@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ShieldAlert, ArrowRight, ArrowLeft, AlertTriangle, ShieldCheck, Filter, CheckCircle2, LayoutDashboard, Award, Sparkles } from 'lucide-react';
 import api from '../services/api';
+import { getErrorMessage } from '../utils/errors';
 
 export default function RiskAnalysisPage() {
   const { id } = useParams();
@@ -27,7 +28,7 @@ export default function RiskAnalysisPage() {
       const res = await api.get(`/api/projects/${id}/risks`);
       setCritique(res.data || {});
     } catch (err) {
-      setError(err.response?.data?.detail || err.message || 'Risk analysis not generated yet.');
+      setError(getErrorMessage(err, 'Risk analysis not generated yet.'));
     } finally {
       setLoading(false);
     }

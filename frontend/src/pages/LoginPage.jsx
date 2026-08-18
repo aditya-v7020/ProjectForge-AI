@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Sparkles, ArrowRight, Lock, User, AlertCircle, Play } from 'lucide-react';
+import { Sparkles, ArrowRight, Lock, User, AlertCircle, Play, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { getErrorMessage } from '../utils/errors';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -10,6 +11,7 @@ export default function LoginPage() {
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -19,10 +21,10 @@ export default function LoginPage() {
     setError('');
 
     try {
-      await login(username, password);
+      await login(username.trim(), password);
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.detail || err.message || 'Login failed. Check credentials.');
+      setError(getErrorMessage(err, 'Login failed. Please check your username/email and password.'));
     } finally {
       setLoading(false);
     }
@@ -35,8 +37,7 @@ export default function LoginPage() {
       await login('demo', 'demo123');
       navigate('/dashboard');
     } catch (err) {
-      // If demo user not created yet, try to auto-login or raise error
-      setError(err.response?.data?.detail || 'Demo user not seeded yet. Click Seed Demo Data or Register.');
+      setError(getErrorMessage(err, 'Demo user not seeded yet. Click Seed Demo Data or Register.'));
     } finally {
       setLoading(false);
     }
@@ -54,19 +55,20 @@ export default function LoginPage() {
         </div>
 
         {error && (
-          <div className="alert alert-danger" style={{ fontSize: '0.85rem' }}>
-            <AlertCircle size={16} /> {error}
+          <div className="alert alert-danger" style={{ fontSize: '0.85rem', marginBottom: '20px', display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+            <AlertCircle size={18} style={{ flexShrink: 0, marginTop: '2px' }} />
+            <span>{error}</span>
           </div>
         )}
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label className="form-label">Username</label>
+            <label className="form-label">Username or Email</label>
             <div style={{ position: 'relative' }}>
               <input
                 type="text"
                 className="form-control"
-                placeholder="Enter your username"
+                placeholder="Enter username or email"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
@@ -80,15 +82,35 @@ export default function LoginPage() {
             <label className="form-label">Password</label>
             <div style={{ position: 'relative' }}>
               <input
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 className="form-control"
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                style={{ paddingLeft: '42px' }}
+                style={{ paddingLeft: '42px', paddingRight: '42px' }}
               />
               <Lock size={18} color="var(--text-dim)" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }} />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  position: 'absolute',
+                  right: '12px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--text-muted)',
+                  cursor: 'pointer',
+                  padding: '4px',
+                  display: 'flex',
+                  alignItems: 'center'
+                }}
+                tabIndex={-1}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
             </div>
           </div>
 

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { PlusCircle, Database, Cpu, Layers, BookOpen, Trash2, ArrowRight, Sparkles, RefreshCw } from 'lucide-react';
 import api from '../services/api';
+import { getErrorMessage } from '../utils/errors';
 import ProgressDashboard from '../components/ProgressDashboard';
 import ProjectHealthScoreCard from '../components/ProjectHealthScoreCard';
 
@@ -24,7 +25,7 @@ export default function DashboardPage() {
       const res = await api.get('/api/projects');
       setProjects(res.data || []);
     } catch (err) {
-      setError(err.response?.data?.detail || err.message || 'Failed to load projects.');
+      setError(getErrorMessage(err, 'Failed to load projects.'));
     } finally {
       setLoading(false);
     }
@@ -39,7 +40,7 @@ export default function DashboardPage() {
       localStorage.setItem('active_project_id', projId);
       navigate(`/projects/${projId}/technology-selection`);
     } catch (err) {
-      setError(err.response?.data?.detail || 'Failed to seed demo project.');
+      setError(getErrorMessage(err, 'Failed to seed demo project.'));
     } finally {
       setSeeding(false);
     }

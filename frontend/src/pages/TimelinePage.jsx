@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Calendar, ArrowRight, ArrowLeft, Clock, Flag, Users, CheckCircle2, Sparkles, ShieldAlert, LayoutDashboard, CheckCircle, Zap } from 'lucide-react';
 import api from '../services/api';
+import { getErrorMessage } from '../utils/errors';
 
 export default function TimelinePage() {
   const { id } = useParams();
@@ -35,7 +36,7 @@ export default function TimelinePage() {
       setProjectReqs(reqRes.data || {});
       setTasksList(tasksRes.data?.tasks || (Array.isArray(tasksRes.data) ? tasksRes.data : []));
     } catch (err) {
-      setError(err.response?.data?.detail || err.message || 'Timeline not generated yet.');
+      setError(getErrorMessage(err, 'Timeline not generated yet.'));
     } finally {
       setLoading(false);
     }

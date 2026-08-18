@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import { MessageSquare, X, Send, Sparkles, Bot, User, RefreshCw, HelpCircle } from 'lucide-react';
 import api from '../services/api';
+import { getErrorMessage } from '../utils/errors';
 
 export default function AiProjectChatDrawer() {
   const { id } = useParams();
@@ -54,7 +55,7 @@ export default function AiProjectChatDrawer() {
         ...prev,
         {
           sender: 'assistant',
-          text: err.response?.data?.detail || 'Failed to connect to AI Assistant. Please try again.',
+          text: getErrorMessage(err, 'Failed to connect to AI Assistant. Please try again.'),
         },
       ]);
     } finally {

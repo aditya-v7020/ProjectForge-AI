@@ -22,6 +22,7 @@ import {
   Ban,
 } from 'lucide-react';
 import api from '../services/api';
+import { getErrorMessage } from '../utils/errors';
 import MermaidDiagram from '../components/MermaidDiagram';
 import InteractiveSystemTopology from '../components/InteractiveSystemTopology';
 
@@ -122,9 +123,10 @@ export default function ArchitecturePage() {
       setArch(archRes.data || {});
     } catch (err) {
       setError(
-        err.response?.data?.detail ||
-          err.message ||
+        getErrorMessage(
+          err,
           'Architecture not generated yet. Complete Technology Selection first.'
+        )
       );
     } finally {
       setLoading(false);

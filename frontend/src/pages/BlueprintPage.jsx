@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { BookOpen, Printer, ArrowLeft, Lock, Cpu, Layers, Kanban, Calendar, ShieldAlert, LayoutDashboard, Database, Server, Code, Users, Flag, AlertTriangle, Zap, CheckCircle2, Download, FileText } from 'lucide-react';
 import api from '../services/api';
+import { getErrorMessage } from '../utils/errors';
 import CostEstimationCard from '../components/CostEstimationCard';
 import InteractiveSystemTopology from '../components/InteractiveSystemTopology';
 
@@ -33,7 +34,7 @@ export default function BlueprintPage() {
       setBlueprint(bpRes.data || {});
       setProjectData(projRes.data || {});
     } catch (err) {
-      setError(err.response?.data?.detail || err.message || 'Complete project blueprint is being compiled.');
+      setError(getErrorMessage(err, 'Complete project blueprint is being compiled.'));
     } finally {
       setLoading(false);
     }
